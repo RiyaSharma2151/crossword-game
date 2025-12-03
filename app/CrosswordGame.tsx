@@ -341,6 +341,7 @@ export const CrosswordGame: React.FC = () => {
     return { across: uniqueAcross, down: uniqueDown };
   }, [words]);
 
+  // --- Check a word whenever a letter changes ---
   const checkWord = useCallback(
     (wordData: WordData, currentGrid: CrosswordGridCell[][]) => {
       let { row, col } = wordData.start;
@@ -366,6 +367,7 @@ export const CrosswordGame: React.FC = () => {
     []
   );
 
+  // --- Handle typing in a cell ---
   const handleCellChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     rowIndex: number,
@@ -378,11 +380,13 @@ export const CrosswordGame: React.FC = () => {
       const cell = newGrid[rowIndex][colIndex];
       cell.displayLetter = newValue;
 
+      // Check all words this cell belongs to
       cell.wordIds.forEach((wordId) => {
         const wordData = words.find((w) => w.id === wordId);
         if (wordData) checkWord(wordData, newGrid);
       });
 
+      // Auto-advance within current word
       if (newValue && activeWordId !== null) {
         const currentWord = words.find((w) => w.id === activeWordId);
         if (currentWord) {
@@ -402,21 +406,25 @@ export const CrosswordGame: React.FC = () => {
     });
   };
 
+  // --- Handle clicking a cell on the grid ---
   const handleCellClick = (
     rowIndex: number,
     colIndex: number,
     cell: CrosswordGridCell
   ) => {
     if (!cell.letter) return;
+
     setActiveCell({ row: rowIndex, col: colIndex });
 
+    // If multiple words intersect here, toggle through them
     if (cell.wordIds.length > 1) {
       const current = activeWordId;
       if (current === null) {
         setActiveWordId(cell.wordIds[0]);
       } else {
         const idx = cell.wordIds.indexOf(current);
-        const nextIndex = idx === -1 ? 0 : (idx + 1) % cell.wordIds.length;
+        const nextIndex =
+          idx === -1 ? 0 : (idx + 1) % cell.wordIds.length;
         setActiveWordId(cell.wordIds[nextIndex]);
       }
     } else if (cell.wordIds.length === 1) {
@@ -424,14 +432,12 @@ export const CrosswordGame: React.FC = () => {
     }
   };
 
-  // autofocus active cell
+  // --- Auto-focus active cell input ---
   useEffect(() => {
     if (!activeCell) return;
+
     const id = `cell-${activeCell.row}-${activeCell.col}`;
-    const el =
-      typeof document !== "undefined"
-        ? document.getElementById(id)
-        : null;
+    const el = document.getElementById(id);
     if (el instanceof HTMLInputElement) {
       el.focus();
       el.select();
@@ -444,18 +450,23 @@ export const CrosswordGame: React.FC = () => {
   if (!gameStarted) {
     return (
       <div className={styles.crosswordContainer}>
-        <h1 className={styles.title}>Marketing Strategy Crossword</h1>
+        <h1 className={styles.dailyTitle}>THE DAILY PUZZLE</h1>
+
+        <div className={styles.metaLine}>
+          <span>DECEMBER 02, 2025</span>
+          <span>AWARD: A FREE WEBSITE FEEDBACK</span>
+        </div>
+
+        <div className={styles.timerLine}>
+          <span className={styles.timerText}>TIME LEFT: 02:00</span>
+        </div>
 
         <div className={styles.startScreen}>
-          <p className={styles.startText}>
-            ⏱ You have 2 minutes to solve the puzzle!
-          </p>
-
           <button
             className={styles.startButton}
             onClick={startNewGame}
           >
-            ▶ Start Game
+            START PUZZLE
           </button>
         </div>
       </div>
@@ -466,16 +477,25 @@ export const CrosswordGame: React.FC = () => {
   if (timeLeft <= 0) {
     return (
       <div className={styles.crosswordContainer}>
-        <h1 className={styles.title}>Time&apos;s Up! ⏰</h1>
+        <h1 className={styles.dailyTitle}>THE DAILY PUZZLE</h1>
+
+        <div className={styles.metaLine}>
+          <span>DECEMBER 02, 2025</span>
+          <span>AWARD: A FREE WEBSITE FEEDBACK</span>
+        </div>
+
+        <div className={styles.timerLine}>
+          <span className={styles.timerText}>TIME LEFT: 0:00</span>
+        </div>
 
         <div className={styles.completionMessage}>
-          <h2>Game Over</h2>
+          <h2>Time&apos;s Up! ⏰</h2>
           <p>Want to try a fresh puzzle?</p>
           <button
             className={styles.claimButton}
             onClick={startNewGame}
           >
-            Try Again
+            New Puzzle
           </button>
         </div>
       </div>
@@ -486,10 +506,20 @@ export const CrosswordGame: React.FC = () => {
   if (!grid.length || !words.length) {
     return (
       <div className={styles.crosswordContainer}>
-        <h1 className={styles.title}>Marketing Strategy Crossword</h1>
-        <p style={{ color: "white", padding: "1rem" }}>
-          Preparing your puzzle...
-        </p>
+        <h1 className={styles.dailyTitle}>THE DAILY PUZZLE</h1>
+
+        <div className={styles.metaLine}>
+          <span>DECEMBER 02, 2025</span>
+          <span>AWARD: A FREE WEBSITE FEEDBACK</span>
+        </div>
+
+        <div className={styles.timerLine}>
+          <span className={styles.timerText}>
+            TIME LEFT: {formatTime(timeLeft)}
+          </span>
+        </div>
+
+        <p style={{ padding: "1rem" }}>Preparing your puzzle...</p>
       </div>
     );
   }
@@ -500,25 +530,22 @@ export const CrosswordGame: React.FC = () => {
 
   return (
     <div className={styles.crosswordContainer}>
-      <h1 className={styles.title}>Marketing Strategy Crossword</h1>
+      <h1 className={styles.dailyTitle}>THE DAILY PUZZLE</h1>
 
-      {/* Top Bar: Timer + Refresh */}
-      <div className={styles.topBar}>
-        <span className={styles.timer}>
-          ⏳ Time Left: {formatTime(timeLeft)}
+      <div className={styles.metaLine}>
+        <span>DECEMBER 02, 2025</span>
+        <span>AWARD: A FREE WEBSITE FEEDBACK</span>
+      </div>
+
+      <div className={styles.timerLine}>
+        <span className={styles.timerText}>
+          TIME LEFT: {formatTime(timeLeft)}
         </span>
-
-        <button
-          className={styles.refreshButton}
-          onClick={startNewGame}
-        >
-          🔄 New Puzzle
-        </button>
       </div>
 
       {/* Active Clue Bar */}
-      <div className={`${styles.activeClueBar} ${styles.blueBackground}`}>
-        <span className={styles.activeClueText}>{activeClueText}</span>
+      <div className={styles.activeClueBar}>
+        <span>{activeClueText}</span>
       </div>
 
       {isPuzzleSolved && (
@@ -534,20 +561,49 @@ export const CrosswordGame: React.FC = () => {
         </div>
       )}
 
+      {/* --- ACROSS | GRID | DOWN --- */}
       <div className={styles.gameLayout}>
-        {/* GRID */}
+        {/* LEFT: ACROSS */}
+        <div className={styles.clueBlock}>
+          <h3>ACROSS</h3>
+          <ul>
+            {clues.across.map((word) => (
+              <li
+                key={word.id}
+                className={`${word.id === activeWordId ? styles.activeClue : ""
+                  } ${solvedWords.has(word.id) ? styles.solvedClue : ""}`}
+                onClick={() => {
+                  setActiveWordId(word.id);
+                  setActiveCell({
+                    row: word.start.row,
+                    col: word.start.col,
+                  });
+                }}
+              >
+                <span className={styles.clueId}>{word.id}.</span>{" "}
+                {word.clue}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* CENTER: GRID */}
         <div className={styles.gridWrapper}>
           <table className={styles.grid}>
             <tbody>
               {grid.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell, colIndex) => {
+                    const isBlocked = cell.letter === null;
+
                     const isActiveCell =
                       activeCell?.row === rowIndex &&
                       activeCell?.col === colIndex;
+
                     const isActiveWordCell =
                       activeWordId !== null &&
                       cell.wordIds.includes(activeWordId);
+
                     const isSolvedCell =
                       cell.wordIds.length > 0 &&
                       cell.wordIds.every((id) => solvedWords.has(id));
@@ -556,16 +612,14 @@ export const CrosswordGame: React.FC = () => {
                       <td
                         key={colIndex}
                         className={`${styles.cell} ${
-                          cell.letter === null
-                            ? styles.blank
-                            : styles.playableCell
+                          isBlocked ? styles.blank : styles.playableCell
                         }`}
                         onClick={() =>
-                          cell.letter &&
+                          !isBlocked &&
                           handleCellClick(rowIndex, colIndex, cell)
                         }
                       >
-                        {cell.letter && (
+                        {!isBlocked && (
                           <div
                             className={`${styles.cellContent} ${
                               isActiveCell ? styles.activeCell : ""
@@ -600,40 +654,28 @@ export const CrosswordGame: React.FC = () => {
           </table>
         </div>
 
-        {/* CLUES */}
-        <div className={styles.cluesContainer}>
-          <div className={styles.clueBlock}>
-            <h3>ACROSS</h3>
-            <ul>
-              {clues.across.map((word) => (
-                <li
-                  key={word.id}
-                  className={`${word.id === activeWordId ? styles.activeClue : ""
-                    } ${solvedWords.has(word.id) ? styles.solvedClue : ""}`}
-                  onClick={() => setActiveWordId(word.id)}
-                >
-                  <span className={styles.clueId}>{word.id}.</span>{" "}
-                  {word.clue}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className={styles.clueBlock}>
-            <h3>DOWN</h3>
-            <ul>
-              {clues.down.map((word) => (
-                <li
-                  key={word.id}
-                  className={`${word.id === activeWordId ? styles.activeClue : ""
-                    } ${solvedWords.has(word.id) ? styles.solvedClue : ""}`}
-                  onClick={() => setActiveWordId(word.id)}
-                >
-                  <span className={styles.clueId}>{word.id}.</span>{" "}
-                  {word.clue}
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* RIGHT: DOWN */}
+        <div className={styles.clueBlock}>
+          <h3>DOWN</h3>
+          <ul>
+            {clues.down.map((word) => (
+              <li
+                key={word.id}
+                className={`${word.id === activeWordId ? styles.activeClue : ""
+                  } ${solvedWords.has(word.id) ? styles.solvedClue : ""}`}
+                onClick={() => {
+                  setActiveWordId(word.id);
+                  setActiveCell({
+                    row: word.start.row,
+                    col: word.start.col,
+                  });
+                }}
+              >
+                <span className={styles.clueId}>{word.id}.</span>{" "}
+                {word.clue}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
