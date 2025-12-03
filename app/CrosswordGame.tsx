@@ -36,8 +36,8 @@ interface BankWord {
 }
 
 // ---------- CONFIG ----------
-const GRID_ROWS = 15;
-const GRID_COLS = 15;
+const GRID_ROWS = 8;
+const GRID_COLS = 8;
 const MAX_WORDS_IN_PUZZLE = 8;
 
 // ---------- WORD BANK (LOCAL, FREE) ----------
