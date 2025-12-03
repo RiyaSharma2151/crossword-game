@@ -39,6 +39,7 @@ interface BankWord {
 const GRID_ROWS = 8;
 const GRID_COLS = 8;
 const MAX_WORDS_IN_PUZZLE = 8;
+const Max_clue = 3;
 
 // ---------- WORD BANK (LOCAL, FREE) ----------
 const WORD_BANK: BankWord[] = [
@@ -565,7 +566,7 @@ export const CrosswordGame: React.FC = () => {
       <div className={styles.gameLayout}>
         {/* LEFT: ACROSS */}
         <div className={styles.clueBlock}>
-          <h3>ACROSS</h3>
+          <h3 className={styles.clueheading}>ACROSS</h3>
           <ul>
             {clues.across.map((word) => (
               <li
