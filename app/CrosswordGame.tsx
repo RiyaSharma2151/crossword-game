@@ -1,3 +1,4 @@
+
 "use client";
 import React, {
   useState,
@@ -526,7 +527,7 @@ export const CrosswordGame: React.FC = () => {
   }
 
   const activeClueText = currentWordData
-    ? `${currentWordData.id} ${currentWordData.direction} – ${currentWordData.clue}`
+    ? `${currentWordData.id}. (${currentWordData.direction}) – ${currentWordData.clue}`
     : "Select a word on the grid.";
 
   return (
@@ -544,10 +545,7 @@ export const CrosswordGame: React.FC = () => {
         </span>
       </div>
 
-      {/* Active Clue Bar */}
-      <div className={styles.activeClueBar}>
-        <span>{activeClueText}</span>
-      </div>
+      
 
       {isPuzzleSolved && (
         <div className={styles.completionMessage}>
@@ -653,7 +651,12 @@ export const CrosswordGame: React.FC = () => {
               ))}
             </tbody>
           </table>
+           {/* Active Clue Bar */}
+      <div className={styles.activeClueBar}>
+        <span>{activeClueText}</span>
+      </div>
         </div>
+       
 
         {/* RIGHT: DOWN */}
         <div className={styles.clueBlock}>

@@ -8,7 +8,7 @@
   color: #222;
  font-family: "Inter", sans-serif;
 
-  padding: 32px 40px 60px;
+  padding: 32px 0px 60px;
 }
 
 /* ================= HEADER ================= */
@@ -63,6 +63,7 @@
   margin-bottom: 30px;
   margin: 0 auto 12px auto;  
   width: 50%;
+  display: none;
 }
 
 
@@ -119,7 +120,7 @@
 
 .clueId {
   font-weight: 700;
-  min-width: 29px;
+  min-width: 19px;
 
 
 }
@@ -312,6 +313,7 @@
   .clueId {
     min-width: 20px;
     font-size: 12px;
+     min-width: 10px;
   }
 
   .clueBlock h3 {
@@ -319,3 +321,37 @@
   }
 }
 
+@media (max-width:500px) {
+  .crosswordContainer {
+    padding: 20px 10px 40px;
+  }
+  /* Stack GRID and Active Clue vertically */
+  .gridWrapper {
+    flex-direction: column;     /* ✅ THIS IS THE MAIN FIX */
+    align-items: center;
+  }
+
+   .activeClueBar {
+    display: block;
+    width: 80%;
+    margin: 14px auto 6px;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .dailyTitle {
+    font-size: 32px;
+  }
+    .metaLine {
+        font-size: 12px;
+
+    }
+    .activeClueBar {
+        font-size: 12px;}
+    .grid {
+        transform: scale(1);
+    }    
+    .clueBlock{
+        padding: 12px 0px;
+    }
+}
